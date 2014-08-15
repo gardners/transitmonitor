@@ -6,8 +6,8 @@
 
 #include <stdio.h>
 
-// char *busfont="-adobe-courier-bold-o-normal--0-0-100-100-m-0-iso8859-1";
-char *busfont="-*-courier-bold-r-*-*-600-*-*-*-*-*-*-*";
+char *busfont="-*-courier-bold-r-*-*-700-*-*-*-*-*-*-*";
+char *textfont="-*-helvetica-bold-r-*-*-40-*-*-*-*-*-*-*";
 
 #define XA_BITMAPDEPTH 1
 
@@ -81,8 +81,8 @@ screen=DefaultScreen(display);
 display_width=DisplayWidth(display,screen);
 display_height=DisplayHeight(display,screen);
 
-width = display_width; 
-height = display_height;
+width = 758; 
+height = 1000;
 
 /* create the main application window */
 /* (with black background instead of white) */
@@ -139,19 +139,24 @@ XGetGeometry(display,win,&root,&xpos,&ypos,&width,&height,&bwidth,&bdepth);
 while (1) 	{
 		XFlush(display);
 		XNextEvent(display, &report);
-		switch (report.type) {
-		case ResizeRequest:
-			/* if its been resized then i gotta be redrawn and scaled */
-			XGetGeometry(display,win,&root,&xpos,&ypos,&width,&height,&bwidth,&bdepth);
-		case Expose:
-			/* patch up a hole */
-			XClearWindow(display,win);
-                        XSetFont(display,gc,XLoadFont(display,busfont));
-                        XDrawString(display,win,gc,50,700,"27",2);
-			break;
-		} /* end switch */
+		update();
 		} /* end while */
 }		
 
+int update()
+{
+		int minutes=random()%30;
+                char wait[16]; 
+		if (minutes>9)
+		snprintf(wait,16,"%d",minutes); else
+		snprintf(wait,16,"% d",minutes);
 
-
+                        XClearWindow(display,win);
+                        XSetFont(display,gc,XLoadFont(display,textfont));
+                        XDrawString(display,win,gc,0,100,"The next loop bus will arrive in about",38);
+                        XSetFont(display,gc,XLoadFont(display,busfont));
+                        XDrawString(display,win,gc,-40,600,wait,strlen(wait));
+                        XSetFont(display,gc,XLoadFont(display,textfont));
+                        XDrawString(display,win,gc,550,650,"minutes.",8);
+ return 0;
+}
